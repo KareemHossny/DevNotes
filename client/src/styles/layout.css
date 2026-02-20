@@ -1,0 +1,10 @@
+.app-shell {
+  width: min(var(--max-content), calc(100% - 2.2rem));
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    width: calc(100% - 1.3rem);
+  }
+}

@@ -1,0 +1,60 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 10% -15%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 40%),
+    radial-gradient(circle at 88% -40%, color-mix(in srgb, var(--surface-soft) 60%, transparent), transparent 48%),
+    var(--bg);
+  color: var(--text);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  line-height: 1.55;
+  letter-spacing: 0.005em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+input,
+button,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+main {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-7) 0 var(--space-8);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+}
+
+p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  main {
+    padding: var(--space-6) 0 var(--space-7);
+  }
+}
