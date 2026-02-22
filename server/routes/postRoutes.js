@@ -14,7 +14,6 @@ const {
 const { protect } = require("../middleware/auth");
 const { requireCsrf } = require("../middleware/csrf");
 const { validate } = require("../middleware/validate");
-const { cache } = require("../middleware/cache");
 
 const router = express.Router();
 
@@ -27,19 +26,13 @@ router.get(
     query("limit").optional().isInt({ min: 1, max: 100 }).withMessage("Invalid limit"),
   ],
   validate,
-  cache(30, { sMaxage: 60, surrogateMaxAge: 120 }),
   searchPosts
 );
-router.get(
-  "/stats",
-  cache(60, { sMaxage: 120, surrogateMaxAge: 300 }),
-  getStats
-);
+router.get("/stats", getStats);
 router.get(
   "/top-liked",
   [query("limit").optional().isInt({ min: 1, max: 30 }).withMessage("Invalid limit")],
   validate,
-  cache(60, { sMaxage: 120, surrogateMaxAge: 300 }),
   getTopLiked
 );
 router.get(
@@ -51,14 +44,12 @@ router.get(
     query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Invalid limit"),
   ],
   validate,
-  cache(30, { sMaxage: 60, surrogateMaxAge: 120 }),
   getPosts
 );
 router.get(
   "/:id",
   [param("id").isMongoId().withMessage("Invalid post id")],
   validate,
-  cache(120, { sMaxage: 300, surrogateMaxAge: 600 }),
   getPostById
 );
 router.post(

@@ -1,7 +1,26 @@
 import axios from "axios";
 
+const normalizeApiBaseUrl = (value) => {
+  const fallback = "http://localhost:5001";
+  const raw = (value || fallback).trim();
+  const trimmed = raw.replace(/\/+$/, "");
+  const withoutApiSuffix = trimmed.replace(/\/api$/i, "");
+
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    /^http:\/\//i.test(withoutApiSuffix) &&
+    !/localhost|127\.0\.0\.1/i.test(withoutApiSuffix)
+  ) {
+    return withoutApiSuffix.replace(/^http:\/\//i, "https://");
+  }
+
+  return withoutApiSuffix;
+};
+
 const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001";
-const API_BASE_URL = rawApiUrl.replace(/\/+$/, "");
+const API_BASE_URL = normalizeApiBaseUrl(rawApiUrl);
+export const AUTH_EXPIRED_EVENT = "auth:expired";
 
 const CSRF_STORAGE_KEY = "devnotes_csrf_token";
 const setCsrfToken = (token) => {
@@ -56,6 +75,9 @@ api.interceptors.response.use(
         return api(original);
       } catch (refreshError) {
         clearCsrfToken();
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT));
+        }
         return Promise.reject(refreshError);
       }
     }
@@ -65,6 +87,9 @@ api.interceptors.response.use(
       String(original.url || "").includes("/api/auth/refresh")
     ) {
       clearCsrfToken();
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT));
+      }
       return Promise.reject(error);
     }
 

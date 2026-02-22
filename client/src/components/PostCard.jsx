@@ -3,7 +3,9 @@ import { FiArrowUpRight, FiCalendar, FiClock, FiHeart, FiUser } from "react-icon
 import { ROUTES } from "../constants/routes";
 
 const PostCard = ({ post }) => {
-  const likesCount = Array.isArray(post.likes) ? post.likes.length : 0;
+  const likesCount = Array.isArray(post.likes)
+    ? post.likes.length
+    : Number(post.likesCount) || 0;
   const tags = Array.isArray(post.tags) ? post.tags : [];
   const excerpt = (post.content || "").slice(0, 170);
   const readingTime = Math.max(

@@ -10,11 +10,13 @@ const { ensureUserIndexes } = require("./utils/ensureIndexes");
 const { fail } = require("./utils/response");
 const logger = require("./utils/logger");
 const requestId = require("./middleware/requestId");
+const apiRoutes = require("./routes");
 
 dotenv.config();
 
 const app = express();
 const isProd = process.env.NODE_ENV === "production";
+const API_PREFIX = "/api";
 const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
 const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
   .split(",")
@@ -85,7 +87,7 @@ app.use(
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
-app.get("/api/health", (req, res) => {
+app.get(`${API_PREFIX}/health`, (req, res) => {
   if (missing.length) {
     return fail(res, `Missing required env: ${missing.join(", ")}`, 500);
   }
@@ -93,8 +95,7 @@ app.get("/api/health", (req, res) => {
   return res.status(200).json({ success: true, data: { status: "ok" }, error: null });
 });
 
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/posts", require("./routes/postRoutes"));
+app.use(API_PREFIX, apiRoutes);
 
 app.use((req, res) => {
   return fail(res, "Route not found", 404);
@@ -163,3 +164,4 @@ if (require.main === module) {
 module.exports = app;
 module.exports.app = app;
 module.exports.initializeApp = initializeApp;
+module.exports.default = app;

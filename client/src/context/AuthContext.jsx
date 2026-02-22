@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { fetchMe, loginUser, logoutUser, refreshUser, registerUser } from "../services/authService";
+import { AUTH_EXPIRED_EVENT } from "../services/api";
 import getApiErrorMessage from "../utils/getApiErrorMessage";
 
 const AuthContext = createContext(null);
@@ -61,6 +62,16 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = Boolean(user);
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleAuthExpired = () => {
+      clearAuthState();
+    };
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+
     const init = async () => {
       try {
         const data = await fetchMe();
@@ -78,7 +89,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     init();
-  }, []);
+
+    return () => {
+      window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    };
+  }, [clearAuthState]);
 
   const value = useMemo(
     () => ({

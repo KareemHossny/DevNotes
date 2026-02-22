@@ -90,8 +90,8 @@ const CreateEditPost = ({ mode }) => {
 
     setSaving(true);
     try {
-      const post = isEdit ? await updatePost(id, payload) : await createPost(payload);
-      navigate(ROUTES.postDetails(post._id), { replace: true });
+      const savedPost = isEdit ? await updatePost(id, payload) : await createPost(payload);
+      navigate(ROUTES.postDetails(savedPost._id), { replace: true });
     } catch (err) {
       const message = getApiErrorMessage(err, "Failed to save post.");
       setError(message);

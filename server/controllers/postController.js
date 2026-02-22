@@ -302,7 +302,10 @@ const deletePost = async (req, res, next) => {
 
     await post.deleteOne();
 
-    return ok(res, { message: "Post deleted" });
+    return ok(res, {
+      id: post._id,
+      message: "Post deleted",
+    });
   } catch (err) {
     return next(err);
   }
@@ -327,10 +330,16 @@ const likePost = async (req, res, next) => {
 
     await post.save();
 
+    const updated = await Post.findById(post._id).populate(
+      "author",
+      "name email"
+    );
+
     return ok(res, {
       id: post._id,
       likesCount: post.likes.length,
       liked: !hasLiked,
+      post: updated,
     });
   } catch (err) {
     return next(err);

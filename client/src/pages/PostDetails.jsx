@@ -150,21 +150,25 @@ const PostDetails = () => {
     setIsLiking(true);
     try {
       const data = await likePost(id);
-      setPost((prev) => {
-        if (!prev) return prev;
-        const currentLikes = Array.isArray(prev.likes) ? prev.likes : [];
-        if (!user) return { ...prev, likes: currentLikes };
+      if (data?.post) {
+        setPost(data.post);
+      } else {
+        setPost((prev) => {
+          if (!prev) return prev;
+          const currentLikes = Array.isArray(prev.likes) ? prev.likes : [];
+          if (!user) return { ...prev, likes: currentLikes };
 
-        const withoutUser = currentLikes.filter(
-          (likeId) => String(likeId) !== String(user.id)
-        );
-        const nextLikes = data.liked ? [...withoutUser, user.id] : withoutUser;
+          const withoutUser = currentLikes.filter(
+            (likeId) => String(likeId) !== String(user.id)
+          );
+          const nextLikes = data?.liked ? [...withoutUser, user.id] : withoutUser;
 
-        return {
-          ...prev,
-          likes: nextLikes,
-        };
-      });
+          return {
+            ...prev,
+            likes: nextLikes,
+          };
+        });
+      }
     } catch (err) {
       const message = getApiErrorMessage(err, "Failed to update like.");
       setActionError(message);

@@ -1,15 +1,22 @@
 import api from "./api";
 
 const unwrap = (payload) => (payload && "data" in payload ? payload.data : payload);
+const withFreshParams = (params = {}) => ({ ...params, _ts: Date.now() });
 
 export const getPosts = async (params = {}, config = {}) => {
-  const { data } = await api.get("/api/posts", { params, ...config });
+  const { data } = await api.get("/api/posts", {
+    ...config,
+    params: withFreshParams(params),
+  });
   return unwrap(data);
 };
 
 // Use this when pagination metadata is needed.
 export const getPostsPaged = async (params = {}, config = {}) => {
-  const { data } = await api.get("/api/posts", { params, ...config });
+  const { data } = await api.get("/api/posts", {
+    ...config,
+    params: withFreshParams(params),
+  });
   return {
     items: data?.data || [],
     meta: data?.meta || {},
@@ -17,17 +24,23 @@ export const getPostsPaged = async (params = {}, config = {}) => {
 };
 
 export const getTopLikedPosts = async (limit = 9) => {
-  const { data } = await api.get("/api/posts/top-liked", { params: { limit } });
+  const { data } = await api.get("/api/posts/top-liked", {
+    params: withFreshParams({ limit }),
+  });
   return unwrap(data);
 };
 
 export const getPostStats = async () => {
-  const { data } = await api.get("/api/posts/stats");
+  const { data } = await api.get("/api/posts/stats", {
+    params: withFreshParams(),
+  });
   return unwrap(data);
 };
 
 export const getPostById = async (postId) => {
-  const { data } = await api.get(`/api/posts/${postId}`);
+  const { data } = await api.get(`/api/posts/${postId}`, {
+    params: withFreshParams(),
+  });
   return unwrap(data);
 };
 

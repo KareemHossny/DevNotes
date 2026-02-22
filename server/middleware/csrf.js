@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { fail } = require("../utils/response");
 
 const CSRF_COOKIE = "csrf_token";
 const CSRF_HEADER = "x-csrf-token";
@@ -24,11 +25,7 @@ const requireCsrf = (req, res, next) => {
   const headerToken = req.headers[CSRF_HEADER];
 
   if (!cookieToken || !headerToken || cookieToken !== headerToken) {
-    return res.status(403).json({
-      success: false,
-      data: null,
-      error: "Invalid CSRF token",
-    });
+    return fail(res, "Invalid CSRF token", 403);
   }
 
   return next();

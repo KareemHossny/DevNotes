@@ -201,30 +201,34 @@ const refresh = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {
-  if (req.user) {
-    req.user.refreshTokenHash = null;
-    req.user.refreshTokenExpiresAt = null;
-    await req.user.save();
+const logout = async (req, res, next) => {
+  try {
+    if (req.user) {
+      req.user.refreshTokenHash = null;
+      req.user.refreshTokenExpiresAt = null;
+      await req.user.save();
+    }
+    res.clearCookie("auth_token", {
+      httpOnly: true,
+      sameSite: cookieSameSite,
+      secure: isProd,
+      path: "/",
+    });
+    res.clearCookie("refresh_token", {
+      httpOnly: true,
+      sameSite: cookieSameSite,
+      secure: isProd,
+      path: "/",
+    });
+    res.clearCookie("csrf_token", {
+      sameSite: cookieSameSite,
+      secure: isProd,
+      path: "/",
+    });
+    return ok(res, { message: "Logged out" });
+  } catch (err) {
+    return next(err);
   }
-  res.clearCookie("auth_token", {
-    httpOnly: true,
-    sameSite: cookieSameSite,
-    secure: isProd,
-    path: "/",
-  });
-  res.clearCookie("refresh_token", {
-    httpOnly: true,
-    sameSite: cookieSameSite,
-    secure: isProd,
-    path: "/",
-  });
-  res.clearCookie("csrf_token", {
-    sameSite: cookieSameSite,
-    secure: isProd,
-    path: "/",
-  });
-  return ok(res, { message: "Logged out" });
 };
 
 module.exports = {
