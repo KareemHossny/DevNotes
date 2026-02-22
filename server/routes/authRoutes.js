@@ -36,7 +36,7 @@ router.post(
   login
 );
 router.get("/me", protect, me);
-router.post("/refresh", requireCsrf, refresh);
+router.post("/refresh", refresh);
 router.post("/logout", protect, requireCsrf, logout);
 
 module.exports = router;

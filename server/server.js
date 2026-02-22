@@ -18,6 +18,10 @@ const app = express();
 const isProd = process.env.NODE_ENV === "production";
 const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
 if (isProd) requiredEnv.push("CLIENT_URL");
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 const missing = requiredEnv.filter((key) => !process.env[key]);
 if (missing.length) {
@@ -27,8 +31,15 @@ if (missing.length) {
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "x-csrf-token"],
   })
 );
 app.use(
@@ -102,16 +113,18 @@ app.use((err, req, res, next) => {
   return fail(res, "Server error", 500);
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 let server;
 
 const start = async () => {
   await connectDB();
   await ensureUserIndexes();
 
-  server = app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  if (process.env.NODE_ENV !== "production") {
+    server = app.listen(PORT, () => {
+      console.log(`Server running on ${PORT}`);
+    });
+  }
 };
 
 start();

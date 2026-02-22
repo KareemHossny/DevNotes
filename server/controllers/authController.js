@@ -7,6 +7,8 @@ const { ok, fail } = require("../utils/response");
 const ACCESS_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
 const REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+const isProd = process.env.NODE_ENV === "production";
+const cookieSameSite = isProd ? "none" : "strict";
 
 const signAccessToken = (userId) =>
   jwt.sign({ id: userId, type: "access" }, process.env.JWT_SECRET, {
@@ -19,17 +21,18 @@ const signRefreshToken = (userId) =>
   });
 
 const setAuthCookies = (res, accessToken, refreshToken) => {
-  const isProd = process.env.NODE_ENV === "production";
   res.cookie("auth_token", accessToken, {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: cookieSameSite,
     secure: isProd,
+    path: "/",
     maxAge: 15 * 60 * 1000,
   });
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: cookieSameSite,
     secure: isProd,
+    path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };
@@ -206,17 +209,20 @@ const logout = async (req, res) => {
   }
   res.clearCookie("auth_token", {
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: cookieSameSite,
+    secure: isProd,
+    path: "/",
   });
   res.clearCookie("refresh_token", {
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: cookieSameSite,
+    secure: isProd,
+    path: "/",
   });
   res.clearCookie("csrf_token", {
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: cookieSameSite,
+    secure: isProd,
+    path: "/",
   });
   return ok(res, { message: "Logged out" });
 };
