@@ -1,5 +1,8 @@
 import axios from "axios";
 
+const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const API_BASE_URL = rawApiUrl.replace(/\/+$/, "");
+
 const CSRF_STORAGE_KEY = "devnotes_csrf_token";
 const setCsrfToken = (token) => {
   if (token) {
@@ -10,7 +13,7 @@ const getCsrfToken = () => localStorage.getItem(CSRF_STORAGE_KEY);
 const clearCsrfToken = () => localStorage.removeItem(CSRF_STORAGE_KEY);
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 

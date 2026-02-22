@@ -14,20 +14,24 @@ const requestId = require("./middleware/requestId");
 dotenv.config();
 
 const app = express();
-
 const isProd = process.env.NODE_ENV === "production";
 const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
-if (isProd) requiredEnv.push("CLIENT_URL");
 const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-const missing = requiredEnv.filter((key) => !process.env[key]);
-if (missing.length) {
-  console.error(`Missing required env: ${missing.join(", ")}`);
-  process.exit(1);
+if (isProd) {
+  requiredEnv.push("CLIENT_URL");
 }
+
+const missing = requiredEnv.filter((key) => !process.env[key]);
+
+if (missing.length) {
+  logger.error({ missing }, "Missing required environment variables");
+}
+
+app.set("trust proxy", 1);
 
 app.use(
   cors({
@@ -54,13 +58,14 @@ app.use(
     },
   })
 );
+
 if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || "development",
     tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE || 0.1),
   });
-  // Newer SDK exposes middleware on Sentry.Handlers; fallback avoids crash.
+
   const sentryHandlers = Sentry.Handlers;
   if (sentryHandlers?.requestHandler) {
     app.use(sentryHandlers.requestHandler());
@@ -69,6 +74,7 @@ if (process.env.SENTRY_DSN) {
     app.use(sentryHandlers.tracingHandler());
   }
 }
+
 app.use(requestId());
 app.use(
   pinoHttp({
@@ -80,6 +86,10 @@ app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
 app.get("/api/health", (req, res) => {
+  if (missing.length) {
+    return fail(res, `Missing required env: ${missing.join(", ")}`, 500);
+  }
+
   return res.status(200).json({ success: true, data: { status: "ok" }, error: null });
 });
 
@@ -113,38 +123,43 @@ app.use((err, req, res, next) => {
   return fail(res, "Server error", 500);
 });
 
-const PORT = process.env.PORT || 5001;
-let server;
+let initPromise = null;
 
-const start = async () => {
-  await connectDB();
-  await ensureUserIndexes();
-
-  if (process.env.NODE_ENV !== "production") {
-    server = app.listen(PORT, () => {
-      console.log(`Server running on ${PORT}`);
-    });
+const initializeApp = async () => {
+  if (missing.length) {
+    throw new Error(`Missing required env: ${missing.join(", ")}`);
   }
+
+  if (initPromise) {
+    return initPromise;
+  }
+
+  initPromise = (async () => {
+    await connectDB();
+    await ensureUserIndexes();
+  })().catch((err) => {
+    initPromise = null;
+    throw err;
+  });
+
+  return initPromise;
 };
 
-start();
+if (require.main === module) {
+  const PORT = process.env.PORT || 5001;
 
-process.on("unhandledRejection", (err) => {
-  logger.error({ err }, "Unhandled Rejection");
-  if (server) {
-    server.close(() => process.exit(1));
-    return;
-  }
-  process.exit(1);
-});
-
-process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Uncaught Exception");
-  if (server) {
-    server.close(() => process.exit(1));
-    return;
-  }
-  process.exit(1);
-});
+  initializeApp()
+    .then(() => {
+      app.listen(PORT, () => {
+        logger.info(`Server running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      logger.error({ err }, "Failed to start server");
+      process.exit(1);
+    });
+}
 
 module.exports = app;
+module.exports.app = app;
+module.exports.initializeApp = initializeApp;
