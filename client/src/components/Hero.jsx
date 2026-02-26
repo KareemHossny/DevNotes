@@ -72,7 +72,9 @@ DevNotes is a modern publishing space for developers to document architecture de
                 src="/Copilot_20260216_021355.png"
                 alt="DevNotes hero visual"
                 className="h-full w-full rounded-2xl object-cover transition duration-500 group-hover:scale-[1.01]"
-                loading="lazy"
+                fetchpriority="high"
+                width="1024"
+                height="1024"
               />
             </picture>
           </div>
