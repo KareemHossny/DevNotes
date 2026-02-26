@@ -4,6 +4,18 @@ import { AUTH_EXPIRED_EVENT } from "../services/api";
 import getApiErrorMessage from "../utils/getApiErrorMessage";
 
 const AuthContext = createContext(null);
+const CSRF_STORAGE_KEY = "devnotes_csrf_token";
+
+const hasSessionHint = () => {
+  if (typeof window === "undefined") return false;
+
+  const hasStoredCsrf = Boolean(window.localStorage.getItem(CSRF_STORAGE_KEY));
+  const hasCsrfCookie = document.cookie
+    .split(";")
+    .some((entry) => entry.trim().startsWith("csrf_token="));
+
+  return hasStoredCsrf || hasCsrfCookie;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -73,6 +85,12 @@ export const AuthProvider = ({ children }) => {
     window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
 
     const init = async () => {
+      if (!hasSessionHint()) {
+        setUser(null);
+        setInitializing(false);
+        return;
+      }
+
       try {
         const data = await fetchMe();
         setUser(data.user || null);

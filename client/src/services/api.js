@@ -36,6 +36,12 @@ const api = axios.create({
   withCredentials: true,
 });
 
+let refreshRequestPromise = null;
+const isRefreshRequest = (url) => {
+  const requestUrl = String(url || "");
+  return /\/(?:api\/)?auth\/refresh(?:\?|$)/.test(requestUrl);
+};
+
 api.interceptors.request.use((config) => {
   const method = (config.method || "get").toLowerCase();
   if (["post", "put", "patch", "delete"].includes(method)) {
@@ -65,13 +71,13 @@ api.interceptors.response.use(
     const original = error.config;
     if (!original || original._retry) return Promise.reject(error);
 
-    if (
-      error.response?.status === 401 &&
-      !String(original.url || "").includes("/api/auth/refresh")
-    ) {
+    if (error.response?.status === 401 && !isRefreshRequest(original.url)) {
       original._retry = true;
       try {
-        await api.post("/api/auth/refresh");
+        if (!refreshRequestPromise) {
+          refreshRequestPromise = api.post("/api/auth/refresh");
+        }
+        await refreshRequestPromise;
         return api(original);
       } catch (refreshError) {
         clearCsrfToken();
@@ -79,13 +85,12 @@ api.interceptors.response.use(
           window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT));
         }
         return Promise.reject(refreshError);
+      } finally {
+        refreshRequestPromise = null;
       }
     }
 
-    if (
-      error.response?.status === 401 &&
-      String(original.url || "").includes("/api/auth/refresh")
-    ) {
+    if (error.response?.status === 401 && isRefreshRequest(original.url)) {
       clearCsrfToken();
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT));
