@@ -6,8 +6,7 @@ import Layout from "./components/layout/Layout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { ROUTES, ROUTE_PATHS } from "./constants/routes.js";
 import { buildCanonicalUrl } from "./utils/seo.js";
-import PageLoader from "./components/ui/PageLoader.jsx";
-import Home from "./pages/Home.jsx";
+const Home = lazy(() => import("./pages/Home.jsx"));
 
 const Posts = lazy(() => import("./pages/Posts.jsx"));
 const PostDetails = lazy(() => import("./pages/PostDetails.jsx"));
@@ -22,11 +21,7 @@ const App = () => {
   const canonicalUrl = buildCanonicalUrl(location.pathname);
 
   return (
-    <Suspense
-      fallback={
-        <PageLoader label="Loading page" />
-      }
-    >
+    <Suspense fallback={null}>
       <Helmet>
         <title>DevNotes</title>
         <meta
