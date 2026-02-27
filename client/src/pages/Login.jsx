@@ -61,7 +61,7 @@ const Login = () => {
             <meta property="og:title" content="DevNotes | Login" />
             <meta property="og:description" content="Sign in to DevNotes to publish developer notes and build logs." />
             <meta property="og:type" content="website" />
-            <meta property="og:image" content="/Copilot_20260216_032458.png" />
+            <meta property="og:image" content="/Copilot_20260216_032458.webp" />
             <meta property="og:url" content={canonicalUrl} />
           </Helmet>
         );

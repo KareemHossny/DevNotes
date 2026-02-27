@@ -78,7 +78,7 @@ const Posts = () => {
               content="Browse developer posts, build logs, and technical notes on DevNotes."
             />
             <meta property="og:type" content="website" />
-            <meta property="og:image" content="/Copilot_20260216_032458.png" />
+            <meta property="og:image" content="/Copilot_20260216_032458.webp" />
             <meta property="og:url" content={canonicalUrl} />
           </Helmet>
         );

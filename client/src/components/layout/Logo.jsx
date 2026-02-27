@@ -17,7 +17,7 @@ const Logo = ({
       <picture>
         <source srcSet="/Copilot_20260216_032458.webp" type="image/webp" />
         <img
-          src="/Copilot_20260216_032458.png"
+          src="/Copilot_20260216_032458.webp"
           alt="DevNotes logo"
           className={`h-12 w-12 object-contain rounded-xl shadow-sm ${imageClassName}`.trim()}
           loading="lazy"

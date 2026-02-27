@@ -247,7 +247,7 @@ const PostDetails = () => {
               content={post.content ? post.content.slice(0, 155) : "Developer notes and build logs on DevNotes."}
             />
             <meta property="og:type" content="article" />
-            <meta property="og:image" content="/Copilot_20260216_032458.png" />
+            <meta property="og:image" content="/Copilot_20260216_032458.webp" />
             <meta property="og:url" content={canonicalUrl} />
           </Helmet>
         );

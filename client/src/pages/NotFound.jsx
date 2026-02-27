@@ -17,7 +17,7 @@ const NotFound = () => {
         <meta property="og:title" content="DevNotes | 404" />
         <meta property="og:description" content="Page not found on DevNotes." />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="/Copilot_20260216_032458.png" />
+        <meta property="og:image" content="/Copilot_20260216_032458.webp" />
         <meta property="og:url" content={canonicalUrl} />
       </Helmet>
       <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">

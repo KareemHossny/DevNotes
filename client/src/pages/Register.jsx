@@ -84,7 +84,7 @@ const Register = () => {
               content="Create a DevNotes account to publish engineering notes and architecture insights."
             />
             <meta property="og:type" content="website" />
-            <meta property="og:image" content="/Copilot_20260216_032458.png" />
+            <meta property="og:image" content="/Copilot_20260216_032458.webp" />
             <meta property="og:url" content={canonicalUrl} />
           </Helmet>
         );

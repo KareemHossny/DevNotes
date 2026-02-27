@@ -136,7 +136,7 @@ const CreateEditPost = ({ mode }) => {
           content="Create and publish developer notes, architecture insights, and build logs."
         />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="/Copilot_20260216_032458.png" />
+        <meta property="og:image" content="/Copilot_20260216_032458.webp" />
         <meta property="og:url" content={canonicalUrl} />
       </Helmet>
       <section className="mx-auto w-full max-w-5xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:p-8">
