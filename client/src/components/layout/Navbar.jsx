@@ -59,7 +59,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 shadow-nav backdrop-blur-xl transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/85">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 shadow-nav backdrop-blur-md transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/85">
       <div className="app-shell px-6 lg:px-12">
         <div className="flex min-h-16 items-center justify-between gap-3 py-2">
           <Logo imageClassName="h-10 w-10 sm:h-11 sm:w-11" textClassName="text-lg" />

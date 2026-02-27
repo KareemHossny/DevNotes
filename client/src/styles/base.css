@@ -11,8 +11,8 @@ body,
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 10% -15%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 40%),
-    radial-gradient(circle at 88% -40%, color-mix(in srgb, var(--surface-soft) 60%, transparent), transparent 48%),
+    radial-gradient(circle at 10% -15%, rgba(59, 91, 219, 0.14), transparent 40%),
+    radial-gradient(circle at 88% -40%, rgba(142, 159, 210, 0.22), transparent 48%),
     var(--bg);
   color: var(--text);
   font-family: "Manrope", "Segoe UI", sans-serif;
