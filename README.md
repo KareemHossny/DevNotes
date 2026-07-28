@@ -2,7 +2,8 @@
 
 ![React](https://img.shields.io/badge/Frontend-React-blue)
 ![Node](https://img.shields.io/badge/Backend-Node.js-green)
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-316192)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E)
 ![JWT](https://img.shields.io/badge/Auth-JWT-orange)
 ![Vercel](https://img.shields.io/badge/Deployment-Vercel-black)
 
@@ -14,7 +15,8 @@ Designed with security-first authentication, scalable REST architecture, and per
 
 ## 🚀 Live Demo
 
-https://devnotes-phi.vercel.app  
+- **Frontend:** https://thedevnotes.vercel.app
+- **Backend:** https://devnotes-backend.vercel.app
 
 ---
 
@@ -30,7 +32,7 @@ https://devnotes-phi.vercel.app
 
 ### Backend
 - Express.js REST API
-- MVC-style structure (routes → controllers → models)
+- MVC-style structure (routes → controllers → models/data access)
 - Middleware-based security and validation pipeline
 - Standardized API response format:
 
@@ -44,9 +46,10 @@ https://devnotes-phi.vercel.app
 ```
 
 ### Database
-- MongoDB with Mongoose ODM
-- Optimized indexes for search and aggregation
-- Separate User and Post schemas
+- Supabase PostgreSQL
+- Normalized tables with foreign keys, constraints, and GIN indexes
+- Junction table for post likes (many-to-many)
+- Full-text search via `tsvector` with trigger-based sync
 
 ### API Pattern
 - RESTful design under `/api`
@@ -69,7 +72,7 @@ https://devnotes-phi.vercel.app
 ### Backend
 - Node.js
 - Express
-- Mongoose
+- @supabase/supabase-js
 - JWT
 - bcryptjs
 - express-validator
@@ -79,7 +82,7 @@ https://devnotes-phi.vercel.app
 - express-rate-limit
 
 ### Database
-- MongoDB
+- Supabase PostgreSQL
 
 ### Authentication
 - JWT access + refresh tokens
@@ -91,7 +94,6 @@ https://devnotes-phi.vercel.app
 - PostCSS
 - Autoprefixer
 - Pino / Pino HTTP logging
-- Sharp
 
 ### Deployment
 - Vercel (separate frontend and backend configurations)
@@ -174,6 +176,7 @@ https://devnotes-phi.vercel.app
 - Structured logging added for production observability.
 - Lazy loading applied to optimize initial bundle size.
 - Manual Vite chunk splitting for better caching and performance.
+- Migrated from MongoDB to Supabase PostgreSQL for referential integrity and relational query capabilities.
 
 ---
 
@@ -193,12 +196,21 @@ cd server && npm install
 cd ../client && npm install
 ```
 
-### 3️⃣ Setup Environment Variables
+### 3️⃣ Setup Database (Supabase)
+
+Create a Supabase project and run the SQL migration:
+
+1. Open your Supabase project → SQL Editor
+2. Execute `server/db/schema.sql`
+3. (Optional) Execute `server/db/seed.sql` for sample data
+
+### 4️⃣ Setup Environment Variables
 
 #### Server (.env)
 
 ```
-MONGO_URI=
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
 JWT_SECRET=
 JWT_REFRESH_SECRET=
 CLIENT_URL=http://localhost:5173
@@ -218,7 +230,7 @@ VITE_API_URL=http://localhost:5001
 VITE_SITE_URL=http://localhost:5173
 ```
 
-### 4️⃣ Run Development Servers
+### 5️⃣ Run Development Servers
 
 Terminal 1:
 
@@ -234,7 +246,7 @@ cd client
 npm run dev
 ```
 
-### 5️⃣ Production Build
+### 6️⃣ Production Build
 
 ```bash
 cd client
@@ -258,9 +270,8 @@ npm start
 - `/api/*` routed to Express app
 
 Production requires:
-- Backend secrets
-- VITE_SITE_URL
-- VITE_API_URL
+- Backend secrets (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, JWT_SECRET)
+- VITE_API_URL and VITE_SITE_URL set as Vercel environment variables
 
 ---
 
@@ -291,6 +302,9 @@ blog/
 │  ├─ models/
 │  ├─ routes/
 │  ├─ utils/
+│  ├─ db/
+│  │  ├─ schema.sql
+│  │  └─ seed.sql
 │  ├─ server.js
 │  └─ vercel.json
 └─ .git/
@@ -323,5 +337,5 @@ blog/
 ## 👨‍💻 Author
 
 **Kareem Hossny**  
-Full Stack MERN Developer  
+Full Stack Developer  
 Open to freelance & junior full stack opportunities
